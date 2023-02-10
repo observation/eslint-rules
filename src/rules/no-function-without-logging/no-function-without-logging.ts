@@ -44,7 +44,7 @@ const addMissingLogStatementSuggestions = (
     messageId: "missingLogging",
     suggest: [
       {
-        messageId: "missingLogging",
+        messageId: "addLoggingSuggestion",
         fix: (fixer: RuleFixer) => {
           const suggestedCode = `Log.trace('${correctLogging}');`;
           if (blockStatement.body.length === 0) {
@@ -62,7 +62,7 @@ const addMissingLogStatementSuggestions = (
         },
       },
       {
-        messageId: "missingLogging",
+        messageId: "addLoggingSuggestion",
         fix: (fixer) => {
           const suggestedCode = `Log.debug('${correctLogging}');`;
           if (blockStatement.body.length === 0) {

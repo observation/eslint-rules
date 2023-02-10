@@ -66,6 +66,18 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
         {
           messageId: "missingLogging",
           data: { expectedLogging: "file:functionName" },
+          suggestions: [
+            {
+              messageId: "addLoggingSuggestion",
+              output:
+                "function functionName(){Log.trace('file:functionName');}",
+            },
+            {
+              messageId: "addLoggingSuggestion",
+              output:
+                "function functionName(){Log.debug('file:functionName');}",
+            },
+          ],
         },
       ],
     },
@@ -76,6 +88,18 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
         {
           messageId: "missingLogging",
           data: { expectedLogging: "file:functionName" },
+          suggestions: [
+            {
+              messageId: "addLoggingSuggestion",
+              output:
+                "const functionName = () => {Log.trace('file:functionName'); }",
+            },
+            {
+              messageId: "addLoggingSuggestion",
+              output:
+                "const functionName = () => {Log.debug('file:functionName'); }",
+            },
+          ],
         },
       ],
     },
@@ -86,6 +110,18 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
         {
           messageId: "missingLogging",
           data: { expectedLogging: "file:functionName" },
+          suggestions: [
+            {
+              messageId: "addLoggingSuggestion",
+              output:
+                "static function functionName(){Log.trace('file:functionName'); }",
+            },
+            {
+              messageId: "addLoggingSuggestion",
+              output:
+                "static function functionName(){Log.debug('file:functionName'); }",
+            },
+          ],
         },
       ],
     },
@@ -96,6 +132,18 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
         {
           messageId: "missingLogging",
           data: { expectedLogging: "file:functionName" },
+          suggestions: [
+            {
+              messageId: "addLoggingSuggestion",
+              output:
+                "class ClassName { functionName(){Log.trace('file:functionName'); } }",
+            },
+            {
+              messageId: "addLoggingSuggestion",
+              output:
+                "class ClassName { functionName(){Log.debug('file:functionName'); } }",
+            },
+          ],
         },
       ],
     },
@@ -106,6 +154,18 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
         {
           messageId: "missingLogging",
           data: { expectedLogging: "file:functionName" },
+          suggestions: [
+            {
+              messageId: "addLoggingSuggestion",
+              output:
+                "class ClassName { functionName = () => {Log.trace('file:functionName'); } }",
+            },
+            {
+              messageId: "addLoggingSuggestion",
+              output:
+                "class ClassName { functionName = () => {Log.debug('file:functionName'); } }",
+            },
+          ],
         },
       ],
     },
