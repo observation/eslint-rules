@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const utils_1 = require("@typescript-eslint/utils");
 const utils_2 = require("../../utils");
-const createRule = utils_1.ESLintUtils.RuleCreator(() => "https://github.com/observation/obsidentify-eslint/README.md");
+const createRule = utils_1.ESLintUtils.RuleCreator(() => "https://github.com/observation/obsidentify-eslint");
 const createSuggestions = (blockStatement, suggestedLogging) => {
     const logLevels = ["trace", "debug"];
     return logLevels.map((logLevel) => {
