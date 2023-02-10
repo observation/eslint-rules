@@ -1,29 +1,30 @@
 # no-function-without-logging
-This ESLint plugin enforces `no-function-without-logging` rule: 
-Every function code block should contain a logging statement ( call to `Log.debug`), with at least its filename/classname and function name, seperated by a colon: `Log.debug('foo:bar')`. 
+This ESLint plugin enforces the `no-function-without-logging` rule: 
+Every function code block should contain a logging statement ( call to `Log.debug`), with at least its filename/classname and function name, seperated by a colon: `Log.debug('foo:bar')`.
 
-In addition to `debug`, the following options are also possible: `trace`, `warning`, `info`, `error`.
+In addition to `debug`, the following options are also possible: `trace`, `warning`, `info`, `error`. 
 
 ## Correcte logging
-Function declaration
+Function declaration:
 ```typescript
 function functionName(){ 
     Log.debug('file:functionName')
 }
 ```
-Function in variable declaration
+Function in variable declaration:
 ```typescript
 const functionName = () => { 
     Log.debug('file:functionName') 
 }
 ```
-Static function declaration
+
+Static function declaration:
 ```typescript
 static function functionName(){ 
     Log.debug('file:functionName') 
 }
 ```
-Function declaration in class
+Function declaration in class:
 ```typescript
 class ClassName { 
     functionName(){
@@ -31,7 +32,7 @@ class ClassName {
     }
 }
 ```
-Function in variable declaration in class
+Function in variable declaration in class:
 ```typescript
 class ClassName { 
     const functionName = () => { 
@@ -40,45 +41,45 @@ class ClassName {
 }
 ```
 
-Class constructor does not need logging statement
+Class constructor does not need logging statement:
 ```typescript
 class ClassName { 
     constructor(){}
 }
 ```
 
-Class getter does not need logging statement
+Class getter does not need logging statement:
 ```typescript
 class ClassName { 
     get value(){} 
 }
 ```
 
-Logging statement can include multiple arguments
+Logging statement can include multiple arguments:
 ```typescript
 function functionName(){ 
     Log.debug('file:functionName', 1)
 }
 ```
 
-Logging statement can have extended text
+Logging statement can have extended text:
 ```typescript
 function functionName(){ 
     Log.debug('file:functionName with extra text')
 }
 ```
 
-Lambda function with body does not need logging statement
+Lambda function with body does not need logging statement:
 ```typescript
 const functionName = () => otherFunction()
 ```
 
-Component declaration does not need logging statement
+Component declaration does not need logging statement:
 ```typescript
 const Component = () => {}
 ```
 
-Component level logging only includes component name
+Component level logging only includes component name:
 ```typescript
 const Component = () => { 
     Log.debug('Component') 
