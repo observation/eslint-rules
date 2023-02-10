@@ -2,43 +2,33 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const utils_1 = require("@typescript-eslint/utils");
-// TOON 2 suggestions ipv 1 fix
 const utils_2 = require("../../utils");
 const createRule = utils_1.ESLintUtils.RuleCreator(() => "https://github.com/observation/obsidentify-eslint/README.md");
+const createSuggestions = (blockStatement, suggestedLogging) => {
+    const logLevels = ["trace", "debug"];
+    return logLevels.map((logLevel) => {
+        const suggestedCode = `Log.${logLevel}('${suggestedLogging}');`;
+        return {
+            messageId: "addLoggingSuggestion",
+            data: { suggestedCode },
+            fix: (fixer) => {
+                if (blockStatement.body.length === 0) {
+                    const newRange = [
+                        blockStatement.range[0] + 1,
+                        blockStatement.range[1],
+                    ];
+                    return fixer.insertTextBeforeRange(newRange, suggestedCode);
+                }
+                return fixer.insertTextBeforeRange(blockStatement.body[0].range, suggestedCode);
+            },
+        };
+    });
+};
 const addMissingLogStatementSuggestions = (context, node, blockStatement, correctLogging) => {
     context.report({
         node,
         messageId: "missingLogging",
-        suggest: [
-            {
-                messageId: "addLoggingSuggestion",
-                fix: (fixer) => {
-                    const suggestedCode = `Log.trace('${correctLogging}');`;
-                    if (blockStatement.body.length === 0) {
-                        const newRange = [
-                            blockStatement.range[0] + 1,
-                            blockStatement.range[1],
-                        ];
-                        return fixer.insertTextBeforeRange(newRange, suggestedCode);
-                    }
-                    return fixer.insertTextBeforeRange(blockStatement.body[0].range, suggestedCode);
-                },
-            },
-            {
-                messageId: "addLoggingSuggestion",
-                fix: (fixer) => {
-                    const suggestedCode = `Log.debug('${correctLogging}');`;
-                    if (blockStatement.body.length === 0) {
-                        const newRange = [
-                            blockStatement.range[0] + 1,
-                            blockStatement.range[1],
-                        ];
-                        return fixer.insertTextBeforeRange(newRange, suggestedCode);
-                    }
-                    return fixer.insertTextBeforeRange(blockStatement.body[0].range, suggestedCode);
-                },
-            },
-        ],
+        suggest: createSuggestions(blockStatement, correctLogging),
     });
 };
 const getFunctionName = (node) => {
@@ -204,7 +194,7 @@ const noFunctionWithoutLogging = createRule({
         messages: {
             incorrectLogging: "Logging should include the filename and function name: Log.debug('{{ expectedLogging }}')",
             missingLogging: "Functions should include at least one logging statement",
-            addLoggingSuggestion: "Add Logging statement at beginning of block statement",
+            addLoggingSuggestion: "Add '{{ suggestedCode }}' at beginning of block statement",
         },
         type: "suggestion",
         fixable: "code",
