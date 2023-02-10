@@ -69,11 +69,13 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
           suggestions: [
             {
               messageId: "addLoggingSuggestion",
+              data: { suggestedCode: "Log.trace('file:functionName');" },
               output:
                 "function functionName(){Log.trace('file:functionName');}",
             },
             {
               messageId: "addLoggingSuggestion",
+              data: { suggestedCode: "Log.debug('file:functionName');" },
               output:
                 "function functionName(){Log.debug('file:functionName');}",
             },
@@ -91,11 +93,13 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
           suggestions: [
             {
               messageId: "addLoggingSuggestion",
+              data: { suggestedCode: "Log.trace('file:functionName');" },
               output:
                 "const functionName = () => {Log.trace('file:functionName'); }",
             },
             {
               messageId: "addLoggingSuggestion",
+              data: { suggestedCode: "Log.debug('file:functionName');" },
               output:
                 "const functionName = () => {Log.debug('file:functionName'); }",
             },
@@ -113,11 +117,13 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
           suggestions: [
             {
               messageId: "addLoggingSuggestion",
+              data: { suggestedCode: "Log.trace('file:functionName');" },
               output:
                 "static function functionName(){Log.trace('file:functionName'); }",
             },
             {
               messageId: "addLoggingSuggestion",
+              data: { suggestedCode: "Log.debug('file:functionName');" },
               output:
                 "static function functionName(){Log.debug('file:functionName'); }",
             },
@@ -135,11 +141,13 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
           suggestions: [
             {
               messageId: "addLoggingSuggestion",
+              data: { suggestedCode: "Log.trace('file:functionName');" },
               output:
                 "class ClassName { functionName(){Log.trace('file:functionName'); } }",
             },
             {
               messageId: "addLoggingSuggestion",
+              data: { suggestedCode: "Log.debug('file:functionName');" },
               output:
                 "class ClassName { functionName(){Log.debug('file:functionName'); } }",
             },
@@ -157,11 +165,13 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
           suggestions: [
             {
               messageId: "addLoggingSuggestion",
+              data: { suggestedCode: "Log.trace('file:functionName');" },
               output:
                 "class ClassName { functionName = () => {Log.trace('file:functionName'); } }",
             },
             {
               messageId: "addLoggingSuggestion",
+              data: { suggestedCode: "Log.debug('file:functionName');" },
               output:
                 "class ClassName { functionName = () => {Log.debug('file:functionName'); } }",
             },

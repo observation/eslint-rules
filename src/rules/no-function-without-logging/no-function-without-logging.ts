@@ -3,11 +3,10 @@ import * as path from "path";
 import { TSESTree } from "@typescript-eslint/utils";
 import { ESLintUtils } from "@typescript-eslint/utils";
 import {
+  ReportSuggestionArray,
   RuleContext,
   RuleFixer,
 } from "@typescript-eslint/utils/dist/ts-eslint";
-
-// TOON 2 suggestions ipv 1 fix
 
 import {
   isArrowFunctionExpression,
@@ -33,6 +32,34 @@ type messageIds =
   | "missingLogging"
   | "addLoggingSuggestion";
 
+const createSuggestions = (
+  blockStatement: TSESTree.BlockStatement,
+  suggestedLogging: string
+): ReportSuggestionArray<"addLoggingSuggestion"> => {
+  const logLevels = ["trace", "debug"];
+  return logLevels.map((logLevel) => {
+    const suggestedCode = `Log.${logLevel}('${suggestedLogging}');`;
+    return {
+      messageId: "addLoggingSuggestion",
+      data: { suggestedCode },
+      fix: (fixer: RuleFixer) => {
+        if (blockStatement.body.length === 0) {
+          const newRange: TSESTree.Range = [
+            blockStatement.range[0] + 1,
+            blockStatement.range[1],
+          ];
+          return fixer.insertTextBeforeRange(newRange, suggestedCode);
+        }
+
+        return fixer.insertTextBeforeRange(
+          blockStatement.body[0].range,
+          suggestedCode
+        );
+      },
+    };
+  });
+};
+
 const addMissingLogStatementSuggestions = (
   context: Readonly<RuleContext<messageIds, any[]>>,
   node: TSESTree.Node,
@@ -42,44 +69,7 @@ const addMissingLogStatementSuggestions = (
   context.report({
     node,
     messageId: "missingLogging",
-    suggest: [
-      {
-        messageId: "addLoggingSuggestion",
-        fix: (fixer: RuleFixer) => {
-          const suggestedCode = `Log.trace('${correctLogging}');`;
-          if (blockStatement.body.length === 0) {
-            const newRange: TSESTree.Range = [
-              blockStatement.range[0] + 1,
-              blockStatement.range[1],
-            ];
-            return fixer.insertTextBeforeRange(newRange, suggestedCode);
-          }
-
-          return fixer.insertTextBeforeRange(
-            blockStatement.body[0].range,
-            suggestedCode
-          );
-        },
-      },
-      {
-        messageId: "addLoggingSuggestion",
-        fix: (fixer) => {
-          const suggestedCode = `Log.debug('${correctLogging}');`;
-          if (blockStatement.body.length === 0) {
-            const newRange: TSESTree.Range = [
-              blockStatement.range[0] + 1,
-              blockStatement.range[1],
-            ];
-            return fixer.insertTextBeforeRange(newRange, suggestedCode);
-          }
-
-          return fixer.insertTextBeforeRange(
-            blockStatement.body[0].range,
-            suggestedCode
-          );
-        },
-      },
-    ],
+    suggest: createSuggestions(blockStatement, correctLogging),
   });
 };
 
@@ -299,7 +289,7 @@ const noFunctionWithoutLogging = createRule({
         "Logging should include the filename and function name: Log.debug('{{ expectedLogging }}')",
       missingLogging: "Functions should include at least one logging statement",
       addLoggingSuggestion:
-        "Add Logging statement at beginning of block statement",
+        "Add '{{ suggestedCode }}' at beginning of block statement",
     },
     type: "suggestion",
     fixable: "code",
