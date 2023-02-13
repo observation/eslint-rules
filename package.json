@@ -1,5 +1,5 @@
 {
-  "name": "eslint-plugin-obsidentify",
+  "name": "eslint-plugin-observation",
   "version": "1.0.0",
   "private": true,
   "main": "dist/index.js",
