@@ -24,7 +24,7 @@ import {
 } from "../../utils";
 
 const createRule = ESLintUtils.RuleCreator(
-  () => "https://github.com/observation/obsidentify-eslint"
+  () => "https://github.com/observation/eslint-rules"
 );
 
 type messageIds =
