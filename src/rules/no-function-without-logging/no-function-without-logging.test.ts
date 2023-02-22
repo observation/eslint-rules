@@ -36,6 +36,10 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
       code: "class ClassName { get value(){} }",
     },
     {
+      name: "Class setter does not need logging statement",
+      code: "class ClassName { set value(value){} }",
+    },
+    {
       name: "Logging statement can include multiple arguments",
       code: "function functionName(){ Log.debug('file:functionName', 1)}",
     },

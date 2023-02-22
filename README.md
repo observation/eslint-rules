@@ -162,7 +162,7 @@ const functionName = () => {
 </tr>
 </table>
 
-## Edge cases
+## Exceptions
 
 Logging statement can include multiple arguments:
 ```typescript
@@ -194,3 +194,37 @@ const Component = () => {
     Log.debug('Component') 
 }
 ```
+
+Constructors do not need logging:
+```typescript
+class ClassName {
+    constructor(){}
+}
+```
+
+Getter and setter functions do not need logging:
+```typescript
+class ClassName {
+    _value: number
+
+    get value(){
+        return this.value
+    }
+
+    set value(value: nuber){
+        this._value = value
+    }
+}
+```
+
+# Build & publish
+
+1. run `tsc` in the working folder, this creates the javascript files that will be run by ESLint
+2. Get your changes to the `develop` branch
+
+# Install
+Run the command:
+```shell
+yarn install -D observation/eslint-rules
+```
+You need to have read access to the `observation/eslint-rules` repo to do this. If an automated process needs this rule set, you can set up github deploy keys.

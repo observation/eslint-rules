@@ -255,6 +255,7 @@ const checkMethodDefinition = (
 ) => {
   if (node.kind === "constructor") return;
   if (node.kind === "get") return;
+  if (node.kind === "set") return;
 
   if (isFunctionExpression(node.value) && isIdentifier(node.key)) {
     const { body } = node.value;
