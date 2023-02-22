@@ -216,7 +216,7 @@ class ClassName {
 }
 ```
 
-Setter like functions (class method definition starting with `set[A-Z]`) do not need logging:
+Setter like functions (class method definition starting with `set[A-Z]` returning void) do not need logging:
 ```typescript
 class ClassName {
     _value: number

@@ -249,7 +249,21 @@ const checkPropertyDefinition = (
   }
 };
 
-const setterLikeFunctionName = new RegExp("^set[A-Z].*");
+const isSetterLikeMethodDefinition = (
+  node: TSESTree.MethodDefinition,
+  functionName: string
+) => {
+  const { returnType } = node.value;
+  const returnsVoid =
+    returnType === undefined ||
+    returnType.typeAnnotation.type === "TSVoidKeyword";
+
+  const startsWithSetterLikeName = new RegExp("^set[A-Z].*");
+  const hasSetterLikeFunctionName = startsWithSetterLikeName.test(functionName);
+
+  return hasSetterLikeFunctionName && returnsVoid;
+};
+
 const checkMethodDefinition = (
   context: Readonly<RuleContext<messageIds, any[]>>,
   node: TSESTree.MethodDefinition
@@ -264,7 +278,7 @@ const checkMethodDefinition = (
       const filename = path.parse(context.getFilename()).name;
       const functionName = node.key.name;
 
-      if (setterLikeFunctionName.test(functionName)) return;
+      if (isSetterLikeMethodDefinition(node, functionName)) return;
 
       const correctLogging =
         filename === functionName ? filename : `${filename}:${functionName}`;
