@@ -216,6 +216,17 @@ class ClassName {
 }
 ```
 
+Setter like functions (class method definition starting with `set[A-Z]`) do not need logging:
+```typescript
+class ClassName {
+    _value: number
+
+    setValue(value: nuber){
+        this._value = value
+    }
+}
+```
+
 # Build & publish
 
 1. run `tsc` in the working folder, this creates the javascript files that will be run by ESLint
