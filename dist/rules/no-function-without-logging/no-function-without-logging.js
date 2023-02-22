@@ -160,7 +160,14 @@ const checkPropertyDefinition = (context, node) => {
         }
     }
 };
-const setterLikeFunctionName = new RegExp("^set[A-Z].*");
+const isSetterLikeMethodDefinition = (node, functionName) => {
+    const { returnType } = node.value;
+    const returnsVoid = returnType === undefined ||
+        returnType.typeAnnotation.type === "TSVoidKeyword";
+    const startsWithSetterLikeName = new RegExp("^set[A-Z].*");
+    const hasSetterLikeFunctionName = startsWithSetterLikeName.test(functionName);
+    return hasSetterLikeFunctionName && returnsVoid;
+};
 const checkMethodDefinition = (context, node) => {
     if (node.kind === "constructor")
         return;
@@ -173,7 +180,7 @@ const checkMethodDefinition = (context, node) => {
         if (!containsLoggingStatement(body)) {
             const filename = path.parse(context.getFilename()).name;
             const functionName = node.key.name;
-            if (setterLikeFunctionName.test(functionName))
+            if (isSetterLikeMethodDefinition(node, functionName))
                 return;
             const correctLogging = filename === functionName ? filename : `${filename}:${functionName}`;
             addMissingLogStatementSuggestions(context, node, body, correctLogging);
