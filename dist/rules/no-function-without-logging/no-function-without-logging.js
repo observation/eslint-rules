@@ -165,6 +165,8 @@ const checkMethodDefinition = (context, node) => {
         return;
     if (node.kind === "get")
         return;
+    if (node.kind === "set")
+        return;
     if ((0, utils_2.isFunctionExpression)(node.value) && (0, utils_2.isIdentifier)(node.key)) {
         const { body } = node.value;
         if (!containsLoggingStatement(body)) {
