@@ -40,6 +40,10 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
       code: "class ClassName { set value(value){} }",
     },
     {
+      name: "Setter like function (class method definition starting with 'set[A-Z]') does not need logging statement",
+      code: "class ClassName { setValue(value){} }",
+    },
+    {
       name: "Logging statement can include multiple arguments",
       code: "function functionName(){ Log.debug('file:functionName', 1)}",
     },

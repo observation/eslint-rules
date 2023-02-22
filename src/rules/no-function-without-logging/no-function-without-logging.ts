@@ -249,6 +249,7 @@ const checkPropertyDefinition = (
   }
 };
 
+const setterLikeFunctionName = new RegExp("^set[A-Z].*");
 const checkMethodDefinition = (
   context: Readonly<RuleContext<messageIds, any[]>>,
   node: TSESTree.MethodDefinition
@@ -262,6 +263,9 @@ const checkMethodDefinition = (
     if (!containsLoggingStatement(body)) {
       const filename = path.parse(context.getFilename()).name;
       const functionName = node.key.name;
+
+      if (setterLikeFunctionName.test(functionName)) return;
+
       const correctLogging =
         filename === functionName ? filename : `${filename}:${functionName}`;
       addMissingLogStatementSuggestions(context, node, body, correctLogging);
