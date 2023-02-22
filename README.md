@@ -1,7 +1,6 @@
 # no-function-without-logging
 This ESLint plugin enforces the `no-function-without-logging` rule: 
-Every function code block should contain a logging statement ( call to `Log.debug`), with the first argument having at least its filename/classname and function name, seperated by a colon: `Log.debug('foo:bar')`. 
-This rule does not apply to constructors and getters.
+Every function code block should contain a logging statement ( call to `Log.debug`), with the first argument having at least its filename/classname and function name, seperated by a colon: `Log.debug('foo:bar')`.
 
 In addition to `debug`, the following options are also possible: `trace`, `warning`, `info`, `error`. 
 
