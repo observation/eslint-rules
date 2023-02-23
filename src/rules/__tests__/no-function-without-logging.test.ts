@@ -1,9 +1,10 @@
-import noFunctionWithoutLogging from "../no-function-without-logging";
-import { ESLintUtils } from "@typescript-eslint/utils";
+import { ESLintUtils } from "@typescript-eslint/utils"
+
+import noFunctionWithoutLogging from "../no-function-without-logging"
 
 const ruleTester = new ESLintUtils.RuleTester({
   parser: "@typescript-eslint/parser",
-});
+})
 
 ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
   valid: [
@@ -236,4 +237,4 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
       ],
     },
   ],
-});
+})

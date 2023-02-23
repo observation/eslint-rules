@@ -1,12 +1,12 @@
-import * as path from "path";
+import * as path from "path"
 
-import { TSESTree } from "@typescript-eslint/utils";
-import { ESLintUtils } from "@typescript-eslint/utils";
+import { TSESTree } from "@typescript-eslint/utils"
+import { ESLintUtils } from "@typescript-eslint/utils"
 import {
   ReportSuggestionArray,
   RuleContext,
   RuleFixer,
-} from "@typescript-eslint/utils/dist/ts-eslint";
+} from "@typescript-eslint/utils/dist/ts-eslint"
 
 import {
   isArrowFunctionExpression,
@@ -21,24 +21,21 @@ import {
   isMethodDefinition,
   isPropertyDefinition,
   isVariableDeclarator,
-} from "../../utils";
+} from "../utils"
 
 const createRule = ESLintUtils.RuleCreator(
   () => "https://github.com/observation/eslint-rules"
-);
+)
 
-type messageIds =
-  | "incorrectLogging"
-  | "missingLogging"
-  | "addLoggingSuggestion";
+type messageIds = "incorrectLogging" | "missingLogging" | "addLoggingSuggestion"
 
 const createSuggestions = (
   blockStatement: TSESTree.BlockStatement,
   suggestedLogging: string
 ): ReportSuggestionArray<"addLoggingSuggestion"> => {
-  const logLevels = ["trace", "debug"];
+  const logLevels = ["trace", "debug"]
   return logLevels.map((logLevel) => {
-    const suggestedCode = `Log.${logLevel}('${suggestedLogging}');`;
+    const suggestedCode = `Log.${logLevel}('${suggestedLogging}');`
     return {
       messageId: "addLoggingSuggestion",
       data: { suggestedCode },
@@ -47,18 +44,18 @@ const createSuggestions = (
           const newRange: TSESTree.Range = [
             blockStatement.range[0] + 1,
             blockStatement.range[1],
-          ];
-          return fixer.insertTextBeforeRange(newRange, suggestedCode);
+          ]
+          return fixer.insertTextBeforeRange(newRange, suggestedCode)
         }
 
         return fixer.insertTextBeforeRange(
           blockStatement.body[0].range,
           suggestedCode
-        );
+        )
       },
-    };
-  });
-};
+    }
+  })
+}
 
 const addMissingLogStatementSuggestions = (
   context: Readonly<RuleContext<messageIds, any[]>>,
@@ -70,24 +67,24 @@ const addMissingLogStatementSuggestions = (
     node,
     messageId: "missingLogging",
     suggest: createSuggestions(blockStatement, correctLogging),
-  });
-};
+  })
+}
 
 const getFunctionName = (node?: TSESTree.Node): string | null => {
-  if (!node) return null;
+  if (!node) return null
 
   if (isMethodDefinition(node)) {
-    if (isIdentifier(node.key)) return node.key.name;
+    if (isIdentifier(node.key)) return node.key.name
   }
 
   if (isFunctionDeclaration(node)) {
-    return node.id ? node.id.name : null;
+    return node.id ? node.id.name : null
   }
 
   if (isVariableDeclarator(node)) {
     if (node.init && isArrowFunctionExpression(node.init)) {
       if (isIdentifier(node.id)) {
-        return node.id ? node.id.name : null;
+        return node.id ? node.id.name : null
       }
     }
   }
@@ -95,15 +92,15 @@ const getFunctionName = (node?: TSESTree.Node): string | null => {
   if (isPropertyDefinition(node)) {
     if (node.value && isArrowFunctionExpression(node.value)) {
       if (isIdentifier(node.key)) {
-        return node.key.name;
+        return node.key.name
       }
     }
   }
 
-  return getFunctionName(node.parent);
-};
+  return getFunctionName(node.parent)
+}
 
-const traceLevels = ["debug", "trace", "info", "warning", "error"];
+const traceLevels = ["debug", "trace", "info", "warning", "error"]
 
 const isLogStatement = (expression: TSESTree.CallExpression) => {
   return (
@@ -112,51 +109,51 @@ const isLogStatement = (expression: TSESTree.CallExpression) => {
     expression.callee.object.name === "Log" &&
     isIdentifier(expression.callee.property) &&
     traceLevels.includes(expression.callee.property.name)
-  );
-};
+  )
+}
 
 const containsLoggingStatement = (
   blockStatement: TSESTree.BlockStatement
 ): boolean => {
   for (var statement of blockStatement.body) {
     if (isExpressionStatement(statement)) {
-      const { expression } = statement;
+      const { expression } = statement
 
       if (isCallExpression(expression) && isLogStatement(expression)) {
-        return true;
+        return true
       }
     }
   }
 
-  return false;
-};
+  return false
+}
 
 const checkFunctionDeclaration = (
   context: Readonly<RuleContext<messageIds, any[]>>,
   node: TSESTree.FunctionDeclaration
 ) => {
-  const functionName = node.id ? node.id.name : "";
-  const file = path.parse(context.getFilename());
+  const functionName = node.id ? node.id.name : ""
+  const file = path.parse(context.getFilename())
 
-  const correctLogging = `${file.name}:${functionName}`;
+  const correctLogging = `${file.name}:${functionName}`
   if (!containsLoggingStatement(node.body)) {
-    addMissingLogStatementSuggestions(context, node, node.body, correctLogging);
+    addMissingLogStatementSuggestions(context, node, node.body, correctLogging)
   }
-};
+}
 
 const checkCallExpression = (
   context: Readonly<RuleContext<messageIds, any[]>>,
   node: TSESTree.CallExpression
 ) => {
   if (isLogStatement(node)) {
-    const filename = path.parse(context.getFilename()).name;
-    const functionName = getFunctionName(node);
+    const filename = path.parse(context.getFilename()).name
+    const functionName = getFunctionName(node)
     const expectedLogging =
-      filename === functionName ? filename : `${filename}:${functionName}`;
+      filename === functionName ? filename : `${filename}:${functionName}`
 
-    const [argument] = node.arguments;
+    const [argument] = node.arguments
     if (!argument) {
-      const newRange: TSESTree.Range = [node.range[0], node.range[1] - 1];
+      const newRange: TSESTree.Range = [node.range[0], node.range[1] - 1]
       context.report({
         node,
         messageId: "incorrectLogging",
@@ -168,12 +165,12 @@ const checkCallExpression = (
               return fixer.insertTextAfterRange(
                 newRange,
                 `'${expectedLogging}'`
-              );
+              )
             },
           },
         ],
-      });
-      return;
+      })
+      return
     }
 
     if (isLiteral(argument) && typeof argument.value === "string") {
@@ -189,43 +186,43 @@ const checkCallExpression = (
                 return fixer.replaceTextRange(
                   argument.range,
                   `'${expectedLogging}'`
-                );
+                )
               },
             },
           ],
-        });
+        })
       }
     }
   }
-};
+}
 
 const checkVariableDeclaration = (
   context: Readonly<RuleContext<messageIds, any[]>>,
   node: TSESTree.VariableDeclaration
 ) => {
-  if (node.declarations.length !== 1) return;
+  if (node.declarations.length !== 1) return
 
-  const [declaration] = node.declarations;
+  const [declaration] = node.declarations
   if (
     declaration.init &&
     isArrowFunctionExpression(declaration.init) &&
     isBlockStatement(declaration.init.body) &&
     isIdentifier(declaration.id)
   ) {
-    const { body } = declaration.init;
+    const { body } = declaration.init
 
-    const filename = path.parse(context.getFilename()).name;
-    const functionName = declaration.id.name;
+    const filename = path.parse(context.getFilename()).name
+    const functionName = declaration.id.name
 
-    const isComponentDeclaration = filename === functionName;
-    if (isComponentDeclaration) return;
+    const isComponentDeclaration = filename === functionName
+    if (isComponentDeclaration) return
 
     if (!containsLoggingStatement(body)) {
-      const correctLogging = `${filename}:${functionName}`;
-      addMissingLogStatementSuggestions(context, node, body, correctLogging);
+      const correctLogging = `${filename}:${functionName}`
+      addMissingLogStatementSuggestions(context, node, body, correctLogging)
     }
   }
-};
+}
 
 const checkPropertyDefinition = (
   context: Readonly<RuleContext<messageIds, any[]>>,
@@ -237,55 +234,55 @@ const checkPropertyDefinition = (
     isIdentifier(node.key) &&
     isBlockStatement(node.value.body)
   ) {
-    const { body } = node.value;
+    const { body } = node.value
 
     if (!containsLoggingStatement(body)) {
-      const filename = path.parse(context.getFilename()).name;
-      const functionName = node.key.name;
+      const filename = path.parse(context.getFilename()).name
+      const functionName = node.key.name
       const correctLogging =
-        filename === functionName ? filename : `${filename}:${functionName}`;
-      addMissingLogStatementSuggestions(context, node, body, correctLogging);
+        filename === functionName ? filename : `${filename}:${functionName}`
+      addMissingLogStatementSuggestions(context, node, body, correctLogging)
     }
   }
-};
+}
 
 const isSetterLikeMethodDefinition = (
   node: TSESTree.MethodDefinition,
   functionName: string
 ) => {
-  const { returnType } = node.value;
+  const { returnType } = node.value
   const returnsVoid =
     returnType === undefined ||
-    returnType.typeAnnotation.type === "TSVoidKeyword";
+    returnType.typeAnnotation.type === "TSVoidKeyword"
 
-  const startsWithSetterLikeName = new RegExp("^set[A-Z].*");
-  const hasSetterLikeFunctionName = startsWithSetterLikeName.test(functionName);
+  const startsWithSetterLikeName = new RegExp("^set[A-Z].*")
+  const hasSetterLikeFunctionName = startsWithSetterLikeName.test(functionName)
 
-  return hasSetterLikeFunctionName && returnsVoid;
-};
+  return hasSetterLikeFunctionName && returnsVoid
+}
 
 const checkMethodDefinition = (
   context: Readonly<RuleContext<messageIds, any[]>>,
   node: TSESTree.MethodDefinition
 ) => {
-  if (node.kind === "constructor") return;
-  if (node.kind === "get") return;
-  if (node.kind === "set") return;
+  if (node.kind === "constructor") return
+  if (node.kind === "get") return
+  if (node.kind === "set") return
 
   if (isFunctionExpression(node.value) && isIdentifier(node.key)) {
-    const { body } = node.value;
+    const { body } = node.value
     if (!containsLoggingStatement(body)) {
-      const filename = path.parse(context.getFilename()).name;
-      const functionName = node.key.name;
+      const filename = path.parse(context.getFilename()).name
+      const functionName = node.key.name
 
-      if (isSetterLikeMethodDefinition(node, functionName)) return;
+      if (isSetterLikeMethodDefinition(node, functionName)) return
 
       const correctLogging =
-        filename === functionName ? filename : `${filename}:${functionName}`;
-      addMissingLogStatementSuggestions(context, node, body, correctLogging);
+        filename === functionName ? filename : `${filename}:${functionName}`
+      addMissingLogStatementSuggestions(context, node, body, correctLogging)
     }
   }
-};
+}
 
 const noFunctionWithoutLogging = createRule({
   create(context) {
@@ -295,7 +292,7 @@ const noFunctionWithoutLogging = createRule({
       VariableDeclaration: (node) => checkVariableDeclaration(context, node),
       PropertyDefinition: (node) => checkPropertyDefinition(context, node),
       MethodDefinition: (node) => checkMethodDefinition(context, node),
-    };
+    }
   },
   name: "no-function-without-logging",
   meta: {
@@ -316,6 +313,6 @@ const noFunctionWithoutLogging = createRule({
     hasSuggestions: true,
   },
   defaultOptions: [],
-});
+})
 
-export default noFunctionWithoutLogging;
+export default noFunctionWithoutLogging
