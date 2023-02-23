@@ -14,7 +14,8 @@ jobs:
     - name: commit transpiled files
       run: |
         if [ -n "$(git status --porcelain)" ]; then
-          echo "there are changes";
+          echo "Untranspiled files: run 'tsc' before commit";
+          exit 1
         else
           echo "no changes";
         fi
