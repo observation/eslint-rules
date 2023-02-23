@@ -16,6 +16,6 @@ jobs:
           if [ -n "$(git status --porcelain)" ]; then
             echo "Running 'tsc' should not result in changes. Run `tsc` before a commit.";
             exit 1
-          else
-            echo "no changes";
           fi
+      - name: Run tests
+        run: yarn test

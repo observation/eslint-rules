@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "main": "dist/index.js",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "@types/eslint": "^8.21.1",
     "@typescript-eslint/parser": "^5.53.0",

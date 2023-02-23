@@ -272,7 +272,7 @@ const checkMethodDefinition = (
   if (node.kind === "get") return;
   if (node.kind === "set") return;
 
-  // const asd = 1;
+  const asd = 1;
 
   if (isFunctionExpression(node.value) && isIdentifier(node.key)) {
     const { body } = node.value;

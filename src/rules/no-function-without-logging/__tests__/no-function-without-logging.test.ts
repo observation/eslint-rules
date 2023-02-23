@@ -1,4 +1,4 @@
-import noFunctionWithoutLogging from "./no-function-without-logging";
+import noFunctionWithoutLogging from "../no-function-without-logging";
 import { ESLintUtils } from "@typescript-eslint/utils";
 
 const ruleTester = new ESLintUtils.RuleTester({
