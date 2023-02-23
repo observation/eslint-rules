@@ -6,17 +6,16 @@ jobs:
     name: tsc
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: yarn install
-      run: yarn install
-    - name: tsc
-      run: tsc
-    - name: commit transpiled files
-      run: |
-        if [ -n "$(git status --porcelain)" ]; then
-          echo "Untranspiled files: run 'tsc' before commit";
-          exit 1
-        else
-          echo "no changes";
-        fi
-      
+      - uses: actions/checkout@v1
+      - name: yarn install
+        run: yarn install
+      - name: tsc
+        run: tsc
+      - name: commit transpiled files
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Running 'tsc' should not result in changes. Run `tsc` before a commit.";
+            exit 1
+          else
+            echo "no changes";
+          fi
