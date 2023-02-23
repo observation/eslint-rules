@@ -1,0 +1,21 @@
+on:
+  push:
+
+jobs:
+  tsc:
+    name: tsc
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+      - name: Install dependencies
+        run: yarn install
+      - name: Run tests
+        run: yarn test
+      - name: Check for untranspiled TypeScript code
+        run: |
+          tsc
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Running 'tsc' should not result in any changes. Run 'tsc' before a commit.";
+            exit 1
+          fi
