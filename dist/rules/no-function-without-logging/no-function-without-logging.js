@@ -175,7 +175,7 @@ const checkMethodDefinition = (context, node) => {
         return;
     if (node.kind === "set")
         return;
-    // const asd = 1;
+    const asd = 1;
     if ((0, utils_2.isFunctionExpression)(node.value) && (0, utils_2.isIdentifier)(node.key)) {
         const { body } = node.value;
         if (!containsLoggingStatement(body)) {

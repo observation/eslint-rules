@@ -14,7 +14,7 @@ jobs:
       - name: commit transpiled files
         run: |
           if [ -n "$(git status --porcelain)" ]; then
-            echo "Running 'tsc' should not result in changes. Run `tsc` before a commit.";
+            echo "Running 'tsc' should not result in any changes. Run 'tsc' before a commit.";
             exit 1
           fi
       - name: Run tests
