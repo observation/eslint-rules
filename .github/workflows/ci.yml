@@ -14,7 +14,6 @@ jobs:
         run: yarn test
       - name: Check for untranspiled TypeScript code
         run: |
-          node -v
           tsc
           if [ -n "$(git status --porcelain)" ]; then
             echo "Running 'tsc' should not result in any changes. Run 'tsc' before a commit.";
