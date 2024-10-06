@@ -1,6 +1,29 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const path = require("path");
+const path = __importStar(require("path"));
 const utils_1 = require("@typescript-eslint/utils");
 const utils_2 = require("../utils");
 const createRule = utils_1.ESLintUtils.RuleCreator(() => 'https://github.com/observation/eslint-rules');
@@ -67,7 +90,7 @@ const isLogStatement = (expression) => {
         traceLevels.includes(expression.callee.property.name));
 };
 const containsLoggingStatement = (blockStatement) => {
-    for (var statement of blockStatement.body) {
+    for (const statement of blockStatement.body) {
         if ((0, utils_2.isExpressionStatement)(statement)) {
             const { expression } = statement;
             if ((0, utils_2.isCallExpression)(expression) && isLogStatement(expression)) {
@@ -102,6 +125,9 @@ const checkCallExpression = (context, node) => {
                 suggest: [
                     {
                         messageId: 'incorrectLogging',
+                        data: {
+                            expectedLogging,
+                        },
                         fix: (fixer) => {
                             return fixer.insertTextAfterRange(newRange, `'${expectedLogging}'`);
                         },
@@ -121,6 +147,9 @@ const checkCallExpression = (context, node) => {
                     suggest: [
                         {
                             messageId: 'incorrectLogging',
+                            data: {
+                                expectedLogging,
+                            },
                             fix: (fixer) => {
                                 return fixer.replaceTextRange(argument.range, `'${expectedLogging}'`);
                             },
@@ -211,7 +240,6 @@ const noFunctionWithoutLogging = createRule({
     meta: {
         docs: {
             description: 'All functions should include a logging statement',
-            recommended: 'error',
         },
         messages: {
             incorrectLogging: "Logging should include the filename and function name: Log.debug('{{ expectedLogging }}')",

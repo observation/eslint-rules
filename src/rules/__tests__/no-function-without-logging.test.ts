@@ -1,10 +1,7 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
-
 import noFunctionWithoutLogging from '../no-function-without-logging'
+import { RuleTester } from '@typescript-eslint/rule-tester'
 
-const ruleTester = new ESLintUtils.RuleTester({
-  parser: '@typescript-eslint/parser',
-})
+const ruleTester = new RuleTester()
 
 ruleTester.run('no-function-without-logging', noFunctionWithoutLogging, {
   valid: [
@@ -18,7 +15,7 @@ ruleTester.run('no-function-without-logging', noFunctionWithoutLogging, {
     },
     {
       name: 'Static function declaration',
-      code: "static function functionName(){ Log.debug('file:functionName') }",
+      code: "class ClassName { static functionName(){ Log.debug('file:functionName') } }",
     },
     {
       name: 'Function declaration in class',
@@ -114,7 +111,7 @@ ruleTester.run('no-function-without-logging', noFunctionWithoutLogging, {
     },
     {
       name: 'Missing logging in static function declaration',
-      code: 'static function functionName(){ }',
+      code: 'class ClassName { static functionName(){ } }',
       errors: [
         {
           messageId: 'missingLogging',
@@ -123,12 +120,12 @@ ruleTester.run('no-function-without-logging', noFunctionWithoutLogging, {
             {
               messageId: 'addLoggingSuggestion',
               data: { suggestedCode: "Log.trace('file:functionName');" },
-              output: "static function functionName(){Log.trace('file:functionName'); }",
+              output: "class ClassName { static functionName(){Log.trace('file:functionName'); } }",
             },
             {
               messageId: 'addLoggingSuggestion',
               data: { suggestedCode: "Log.debug('file:functionName');" },
-              output: "static function functionName(){Log.debug('file:functionName'); }",
+              output: "class ClassName { static functionName(){Log.debug('file:functionName'); } }",
             },
           ],
         },
