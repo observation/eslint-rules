@@ -1,6 +1,6 @@
-import { jest } from '@jest/globals'
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import noMissingTranslations from '../no-missing-translations'
+import { jest } from '@jest/globals'
 
 const ruleTester = new RuleTester()
 
