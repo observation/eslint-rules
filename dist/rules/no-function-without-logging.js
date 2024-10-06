@@ -1,32 +1,7 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const path = __importStar(require("path"));
-const utils_1 = require("@typescript-eslint/utils");
-const utils_2 = require("../utils");
-const createRule = utils_1.ESLintUtils.RuleCreator(() => 'https://github.com/observation/eslint-rules');
+import * as path from 'path';
+import { ESLintUtils } from '@typescript-eslint/utils';
+import { isArrowFunctionExpression, isBlockStatement, isCallExpression, isExpressionStatement, isFunctionDeclaration, isFunctionExpression, isIdentifier, isLiteral, isMemberExpression, isMethodDefinition, isPropertyDefinition, isVariableDeclarator, } from '../utils';
+const createRule = ESLintUtils.RuleCreator(() => 'https://github.com/observation/eslint-rules');
 const createSuggestions = (blockStatement, suggestedLogging) => {
     const logLevels = ['trace', 'debug'];
     return logLevels.map((logLevel) => {
@@ -57,24 +32,24 @@ const getFunctionName = (node) => {
     if (!node) {
         return null;
     }
-    if ((0, utils_2.isMethodDefinition)(node)) {
-        if ((0, utils_2.isIdentifier)(node.key)) {
+    if (isMethodDefinition(node)) {
+        if (isIdentifier(node.key)) {
             return node.key.name;
         }
     }
-    if ((0, utils_2.isFunctionDeclaration)(node)) {
+    if (isFunctionDeclaration(node)) {
         return node.id ? node.id.name : null;
     }
-    if ((0, utils_2.isVariableDeclarator)(node)) {
-        if (node.init && (0, utils_2.isArrowFunctionExpression)(node.init)) {
-            if ((0, utils_2.isIdentifier)(node.id)) {
+    if (isVariableDeclarator(node)) {
+        if (node.init && isArrowFunctionExpression(node.init)) {
+            if (isIdentifier(node.id)) {
                 return node.id ? node.id.name : null;
             }
         }
     }
-    if ((0, utils_2.isPropertyDefinition)(node)) {
-        if (node.value && (0, utils_2.isArrowFunctionExpression)(node.value)) {
-            if ((0, utils_2.isIdentifier)(node.key)) {
+    if (isPropertyDefinition(node)) {
+        if (node.value && isArrowFunctionExpression(node.value)) {
+            if (isIdentifier(node.key)) {
                 return node.key.name;
             }
         }
@@ -83,17 +58,17 @@ const getFunctionName = (node) => {
 };
 const traceLevels = ['debug', 'trace', 'info', 'warning', 'error'];
 const isLogStatement = (expression) => {
-    return ((0, utils_2.isMemberExpression)(expression.callee) &&
-        (0, utils_2.isIdentifier)(expression.callee.object) &&
+    return (isMemberExpression(expression.callee) &&
+        isIdentifier(expression.callee.object) &&
         expression.callee.object.name === 'Log' &&
-        (0, utils_2.isIdentifier)(expression.callee.property) &&
+        isIdentifier(expression.callee.property) &&
         traceLevels.includes(expression.callee.property.name));
 };
 const containsLoggingStatement = (blockStatement) => {
     for (const statement of blockStatement.body) {
-        if ((0, utils_2.isExpressionStatement)(statement)) {
+        if (isExpressionStatement(statement)) {
             const { expression } = statement;
-            if ((0, utils_2.isCallExpression)(expression) && isLogStatement(expression)) {
+            if (isCallExpression(expression) && isLogStatement(expression)) {
                 return true;
             }
         }
@@ -136,7 +111,7 @@ const checkCallExpression = (context, node) => {
             });
             return;
         }
-        if ((0, utils_2.isLiteral)(argument) && typeof argument.value === 'string') {
+        if (isLiteral(argument) && typeof argument.value === 'string') {
             if (!argument.value.startsWith(expectedLogging)) {
                 context.report({
                     node,
@@ -166,9 +141,9 @@ const checkVariableDeclaration = (context, node) => {
     }
     const [declaration] = node.declarations;
     if (declaration.init &&
-        (0, utils_2.isArrowFunctionExpression)(declaration.init) &&
-        (0, utils_2.isBlockStatement)(declaration.init.body) &&
-        (0, utils_2.isIdentifier)(declaration.id)) {
+        isArrowFunctionExpression(declaration.init) &&
+        isBlockStatement(declaration.init.body) &&
+        isIdentifier(declaration.id)) {
         const { body } = declaration.init;
         const filename = path.parse(context.getFilename()).name;
         const functionName = declaration.id.name;
@@ -184,9 +159,9 @@ const checkVariableDeclaration = (context, node) => {
 };
 const checkPropertyDefinition = (context, node) => {
     if (node.value &&
-        (0, utils_2.isArrowFunctionExpression)(node.value) &&
-        (0, utils_2.isIdentifier)(node.key) &&
-        (0, utils_2.isBlockStatement)(node.value.body)) {
+        isArrowFunctionExpression(node.value) &&
+        isIdentifier(node.key) &&
+        isBlockStatement(node.value.body)) {
         const { body } = node.value;
         if (!containsLoggingStatement(body)) {
             const filename = path.parse(context.getFilename()).name;
@@ -213,7 +188,7 @@ const checkMethodDefinition = (context, node) => {
     if (node.kind === 'set') {
         return;
     }
-    if ((0, utils_2.isFunctionExpression)(node.value) && (0, utils_2.isIdentifier)(node.key)) {
+    if (isFunctionExpression(node.value) && isIdentifier(node.key)) {
         const { body } = node.value;
         if (!containsLoggingStatement(body)) {
             const filename = path.parse(context.getFilename()).name;
@@ -253,4 +228,4 @@ const noFunctionWithoutLogging = createRule({
     },
     defaultOptions: [],
 });
-exports.default = noFunctionWithoutLogging;
+export default noFunctionWithoutLogging;
