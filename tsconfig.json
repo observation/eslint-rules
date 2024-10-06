@@ -6,7 +6,8 @@
     "strict": true,
     "target": "esnext",
     "moduleResolution": "Bundler",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true
   },
   "files": ["src/index.ts"]
 }
