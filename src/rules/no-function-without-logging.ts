@@ -1,7 +1,6 @@
 import * as path from 'path'
 
-import { TSESTree } from '@typescript-eslint/utils'
-import { ESLintUtils } from '@typescript-eslint/utils'
+import { TSESTree, ESLintUtils } from '@typescript-eslint/utils'
 import { ReportSuggestionArray, RuleContext, RuleFixer } from '@typescript-eslint/utils/ts-eslint'
 
 import {

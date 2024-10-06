@@ -6,7 +6,8 @@
     "strict": true,
     "target": "esnext",
     "moduleResolution": "NodeNext",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true
   },
   "files": ["src/index.ts"]
 }
