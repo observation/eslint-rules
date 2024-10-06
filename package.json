@@ -8,6 +8,7 @@
     "lint": "tsc && eslint 'src/**'"
   },
   "dependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/node": "^18.14.0",
     "@typescript-eslint/parser": "^8.7.0",
     "@typescript-eslint/utils": "^8.7.0",
