@@ -1,18 +1,20 @@
-import { readFileSync } from 'fs';
-import { ESLintUtils } from '@typescript-eslint/utils';
-import { isIdentifier, isLiteral, isMemberExpression } from '../utils';
-const createRule = ESLintUtils.RuleCreator(() => 'https://github.com/observation/eslint-rules');
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = require("fs");
+const utils_1 = require("@typescript-eslint/utils");
+const utils_2 = require("../utils");
+const createRule = utils_1.ESLintUtils.RuleCreator(() => 'https://github.com/observation/eslint-rules');
 const checkTranslationFileForKey = (translationFile, translationKey) => {
-    const fileContent = readFileSync(translationFile, 'utf8');
+    const fileContent = (0, fs_1.readFileSync)(translationFile, 'utf8');
     const jsonData = JSON.parse(fileContent);
     return !(translationKey in jsonData);
 };
 const checkCallExpression = (context, node, translationFiles) => {
-    if (isMemberExpression(node.callee)) {
+    if ((0, utils_2.isMemberExpression)(node.callee)) {
         const { object, property } = node.callee;
-        if (isIdentifier(object) && isIdentifier(property)) {
+        if ((0, utils_2.isIdentifier)(object) && (0, utils_2.isIdentifier)(property)) {
             const [argument] = node.arguments;
-            if (object.name === 'i18n' && property.name === 't' && isLiteral(argument)) {
+            if (object.name === 'i18n' && property.name === 't' && (0, utils_2.isLiteral)(argument)) {
                 const translationKey = argument.value;
                 if (typeof translationKey === 'string') {
                     const invalidTranslationFiles = translationFiles.filter((translationFile) => checkTranslationFileForKey(translationFile, translationKey));
@@ -66,4 +68,4 @@ const noMissingTranslations = createRule({
         },
     ],
 });
-export default noMissingTranslations;
+exports.default = noMissingTranslations;

@@ -1,40 +1,56 @@
-import { AST_NODE_TYPES } from '@typescript-eslint/utils';
-export const isCallExpression = (statement) => {
-    return statement.type === AST_NODE_TYPES.CallExpression;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isFunctionExpression = exports.isVariableDeclarator = exports.isVariableDeclaration = exports.isPropertyDefinition = exports.isFunctionDeclaration = exports.isBlockStatement = exports.isArrowFunctionExpression = exports.isMethodDefinition = exports.isLiteral = exports.isExpressionStatement = exports.isIdentifier = exports.isMemberExpression = exports.isCallExpression = void 0;
+const utils_1 = require("@typescript-eslint/utils");
+const isCallExpression = (statement) => {
+    return statement.type === utils_1.AST_NODE_TYPES.CallExpression;
 };
-export const isMemberExpression = (statement) => {
-    return statement.type === AST_NODE_TYPES.MemberExpression;
+exports.isCallExpression = isCallExpression;
+const isMemberExpression = (statement) => {
+    return statement.type === utils_1.AST_NODE_TYPES.MemberExpression;
 };
-export const isIdentifier = (statement) => {
-    return statement.type === AST_NODE_TYPES.Identifier;
+exports.isMemberExpression = isMemberExpression;
+const isIdentifier = (statement) => {
+    return statement.type === utils_1.AST_NODE_TYPES.Identifier;
 };
-export const isExpressionStatement = (statement) => {
-    return statement.type === AST_NODE_TYPES.ExpressionStatement;
+exports.isIdentifier = isIdentifier;
+const isExpressionStatement = (statement) => {
+    return statement.type === utils_1.AST_NODE_TYPES.ExpressionStatement;
 };
-export const isLiteral = (statement) => {
-    return statement.type === AST_NODE_TYPES.Literal;
+exports.isExpressionStatement = isExpressionStatement;
+const isLiteral = (statement) => {
+    return statement.type === utils_1.AST_NODE_TYPES.Literal;
 };
-export const isMethodDefinition = (statement) => {
-    return statement.type === AST_NODE_TYPES.MethodDefinition;
+exports.isLiteral = isLiteral;
+const isMethodDefinition = (statement) => {
+    return statement.type === utils_1.AST_NODE_TYPES.MethodDefinition;
 };
-export const isArrowFunctionExpression = (statement) => {
-    return statement.type === AST_NODE_TYPES.ArrowFunctionExpression;
+exports.isMethodDefinition = isMethodDefinition;
+const isArrowFunctionExpression = (statement) => {
+    return statement.type === utils_1.AST_NODE_TYPES.ArrowFunctionExpression;
 };
-export const isBlockStatement = (statement) => {
-    return statement.type === AST_NODE_TYPES.BlockStatement;
+exports.isArrowFunctionExpression = isArrowFunctionExpression;
+const isBlockStatement = (statement) => {
+    return statement.type === utils_1.AST_NODE_TYPES.BlockStatement;
 };
-export const isFunctionDeclaration = (statement) => {
-    return statement.type === AST_NODE_TYPES.FunctionDeclaration;
+exports.isBlockStatement = isBlockStatement;
+const isFunctionDeclaration = (statement) => {
+    return statement.type === utils_1.AST_NODE_TYPES.FunctionDeclaration;
 };
-export const isPropertyDefinition = (statement) => {
-    return statement.type === AST_NODE_TYPES.PropertyDefinition;
+exports.isFunctionDeclaration = isFunctionDeclaration;
+const isPropertyDefinition = (statement) => {
+    return statement.type === utils_1.AST_NODE_TYPES.PropertyDefinition;
 };
-export const isVariableDeclaration = (statement) => {
-    return statement.type === AST_NODE_TYPES.VariableDeclaration;
+exports.isPropertyDefinition = isPropertyDefinition;
+const isVariableDeclaration = (statement) => {
+    return statement.type === utils_1.AST_NODE_TYPES.VariableDeclaration;
 };
-export const isVariableDeclarator = (statement) => {
-    return statement.type === AST_NODE_TYPES.VariableDeclarator;
+exports.isVariableDeclaration = isVariableDeclaration;
+const isVariableDeclarator = (statement) => {
+    return statement.type === utils_1.AST_NODE_TYPES.VariableDeclarator;
 };
-export const isFunctionExpression = (statement) => {
-    return statement.type === AST_NODE_TYPES.FunctionExpression;
+exports.isVariableDeclarator = isVariableDeclarator;
+const isFunctionExpression = (statement) => {
+    return statement.type === utils_1.AST_NODE_TYPES.FunctionExpression;
 };
+exports.isFunctionExpression = isFunctionExpression;
