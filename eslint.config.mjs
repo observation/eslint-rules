@@ -1,17 +1,10 @@
-import pluginJs from '@eslint/js'
+import eslint from '@eslint/js'
 import tseslint from 'typescript-eslint'
 
-export default [
-  {
-    files: ['**/*.{js,mjs,cjs,ts}'],
+export default tseslint.config(eslint.configs.recommended, ...tseslint.configs.recommended, {
+  rules: {
+    'no-console': 'warn',
+    curly: ['error', 'multi-line'],
+    'prefer-destructuring': ['error'],
   },
-  pluginJs.configs.recommended,
-  {
-    rules: {
-      'no-console': 'warn',
-      curly: ['error', 'multi-line'],
-      'prefer-destructuring': ['error'],
-    },
-  },
-  ...tseslint.configs.recommended,
-]
+})
