@@ -12,13 +12,13 @@ jest.mock("fs", () => {
     readFileSync: jest.fn((file: string) => {
       if (file === "en.json") {
         return JSON.stringify({
-          "Existing key": "Existing value",
-          "Key that only exists in en.json": "Value",
+          "Existing key": "Existing key",
+          "Key that only exists in en.json": "Key that only exists in en.json",
         })
       }
       if (file === "nl.json") {
         return JSON.stringify({
-          "Existing key": "Existing value",
+          "Existing key": "Bestaande sleutel",
         })
       }
     }),
