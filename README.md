@@ -227,6 +227,58 @@ class ClassName {
 }
 ```
 
+## No Missing Translations
+
+This ESLint rule ensures that every call to `i18n.t(...)` in the codebase has a corresponding key in all translation files. A translation file is defined as an input file for the npm package `i18n-js` (https://www.npmjs.com/package/i18n-js).
+
+## Examples
+
+Translation file (`nl.json`):
+```
+{
+    'Hello world!': "Hallo wereld!"
+}
+```
+
+<table>
+<tr>
+<td> ❌ Incorrect </td> <td> ✅ Correct </td>
+</tr>
+<tr>
+<td>
+
+```typescript
+i18n.t('Missing translation key')
+```
+</td>
+<td>
+
+```typescript
+i18n.t('Hello world')
+``` 
+</td>
+</tr>
+</table>
+
+## Configuration
+To configure the ESLint rule, specify the relative paths of the translation files in an array within the ESLint configuration:
+```
+...
+rules: {
+    'observation/no-missing-translations': [
+        'error', 
+        {
+            translationFiles: [
+                'src/app/translations/locales/en.json', 
+                'src/app/translations/locales/nl.json'
+            ],
+        }
+    ]
+}
+...
+
+```
+
 # Build & publish
 
 1. run `tsc` in the working folder, this creates the javascript files that will be run by ESLint
