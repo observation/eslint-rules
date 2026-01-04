@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@types/eslint": "^9.0.0",
-    "@types/node": "^18.14.0",
+    "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@typescript-eslint/rule-tester": "^8.51.0",
@@ -23,5 +23,8 @@
     "prettier": "^3.7.4",
     "ts-jest": "^29.0.5",
     "typescript": "5.8.3"
+  },
+  "engines": { 
+    "node": ">=20"
   }
 }
