@@ -4,6 +4,7 @@
     "outDir": "dist",
     "lib": ["es2023"],
     "esModuleInterop": true,
+    "isolatedModules": true,
     "strict": true,
     "target": "esnext"
   },
