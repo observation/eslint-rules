@@ -1,16 +1,13 @@
-import { ESLintUtils } from "@typescript-eslint/utils"
+import { RuleTester } from '@typescript-eslint/rule-tester'
+import rule from '../no-function-without-logging'
 
-import noFunctionWithoutLogging from "../no-function-without-logging"
+const ruleTester = new RuleTester()
 
-const ruleTester = new ESLintUtils.RuleTester({
-  parser: "@typescript-eslint/parser",
-})
-
-ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
+ruleTester.run("no-function-without-logging", rule, {
   valid: [
     {
       name: "Function declaration",
-      code: "function functionName(){ Log.debug('file:functionName')}",
+      code: "function functionName(){ Log.debug('file:functionName') }",
     },
     {
       name: "Function in variable declaration",
@@ -18,7 +15,7 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
     },
     {
       name: "Static function declaration",
-      code: "static function functionName(){ Log.debug('file:functionName') }",
+      code: "class MyClass { static functionName() { Log.debug('file:functionName') } }",
     },
     {
       name: "Function declaration in class",
@@ -46,11 +43,11 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
     },
     {
       name: "Logging statement can include multiple arguments",
-      code: "function functionName(){ Log.debug('file:functionName', 1)}",
+      code: "function functionName(){ Log.debug('file:functionName', 1) }",
     },
     {
       name: "Logging statement can have extended text",
-      code: "function functionName(){ Log.debug('file:functionName with extra text')}",
+      code: "function functionName(){ Log.debug('file:functionName with extra text') }",
     },
     {
       name: "Lambda function with body does not need logging statement",
@@ -118,7 +115,7 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
     },
     {
       name: "Missing logging in static function declaration",
-      code: "static function functionName(){ }",
+      code: "class ClassName { static functionName(){ } }",
       errors: [
         {
           messageId: "missingLogging",
@@ -128,13 +125,13 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
               messageId: "addLoggingSuggestion",
               data: { suggestedCode: "Log.trace('file:functionName');" },
               output:
-                "static function functionName(){Log.trace('file:functionName'); }",
+                "class ClassName { static functionName(){Log.trace('file:functionName'); } }",
             },
             {
               messageId: "addLoggingSuggestion",
               data: { suggestedCode: "Log.debug('file:functionName');" },
               output:
-                "static function functionName(){Log.debug('file:functionName'); }",
+                "class ClassName { static functionName(){Log.debug('file:functionName'); } }",
             },
           ],
         },
@@ -190,7 +187,7 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
     },
     {
       name: "Missing function name in logging",
-      code: "function functionName(){ Log.debug('file')}",
+      code: "function functionName(){ Log.debug('file') }",
       errors: [
         {
           messageId: "incorrectLogging",
@@ -198,7 +195,7 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
             {
               messageId: "incorrectLogging",
               output:
-                "function functionName(){ Log.debug('file:functionName')}",
+                "function functionName(){ Log.debug('file:functionName') }",
             },
           ],
         },
@@ -206,7 +203,7 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
     },
     {
       name: "Missing filename in logging",
-      code: "function functionName(){ Log.debug('functionName')}",
+      code: "function functionName(){ Log.debug('functionName') }",
       errors: [
         {
           messageId: "incorrectLogging",
@@ -214,7 +211,7 @@ ruleTester.run("no-function-without-logging", noFunctionWithoutLogging, {
             {
               messageId: "incorrectLogging",
               output:
-                "function functionName(){ Log.debug('file:functionName')}",
+                "function functionName(){ Log.debug('file:functionName') }",
             },
           ],
         },

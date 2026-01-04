@@ -1,6 +1,5 @@
 import { readFileSync } from "fs"
-import { RuleContext } from "@typescript-eslint/utils/dist/ts-eslint"
-import { ESLintUtils, TSESTree } from "@typescript-eslint/utils"
+import { TSESLint, TSESTree, ESLintUtils } from '@typescript-eslint/utils'
 import { isIdentifier, isLiteral, isMemberExpression } from "../utils"
 
 const createRule = ESLintUtils.RuleCreator(
@@ -24,7 +23,7 @@ const checkTranslationFileForKey = (
 }
 
 const checkCallExpression = (
-  context: Readonly<RuleContext<MessageIds, unknown[]>>,
+  context: Readonly<TSESLint.RuleContext<MessageIds, unknown[]>>,
   node: TSESTree.CallExpression,
   translationFiles: string[]
 ) => {
@@ -77,7 +76,6 @@ const noMissingTranslations = createRule<Options, MessageIds>({
     docs: {
       description:
         "All translation keys used in the codebase should have a corresponding translation in the translation files",
-        recommended: "error",
     },
     messages: {
       missingTranslationKey:
@@ -103,5 +101,14 @@ const noMissingTranslations = createRule<Options, MessageIds>({
     },
   ],
 })
+
+export const configs = {
+  recommended: {
+    plugins: ['observation'],
+    rules: {
+      'observation/no-missing-translations': 'error',
+    },
+  },
+}
 
 export default noMissingTranslations

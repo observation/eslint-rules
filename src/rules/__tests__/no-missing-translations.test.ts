@@ -1,10 +1,10 @@
-import { ESLintUtils } from "@typescript-eslint/utils"
-import noMissingTranslations from "../no-missing-translations"
+import { RuleTester } from '@typescript-eslint/rule-tester'
+import rule from '../no-missing-translations'
+
 import { jest } from "@jest/globals"
 
-const ruleTester = new ESLintUtils.RuleTester({
-  parser: "@typescript-eslint/parser",
-})
+const ruleTester = new RuleTester()
+
 jest.mock("fs", () => {
   const actualFs = jest.requireActual<typeof import("fs")>("fs")
   const newFs = {
@@ -29,7 +29,7 @@ jest.mock("fs", () => {
   }
 })
 
-ruleTester.run("no-missing-translations", noMissingTranslations, {
+ruleTester.run("no-missing-translations", rule, {
   valid: [
     {
       name: "Function declaration",
