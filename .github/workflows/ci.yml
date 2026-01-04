@@ -7,17 +7,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v6
+
       - uses: actions/setup-node@v3
         with:
           node-version: 20
+
+      - name: Cache Yarn cache and node_modules
+        uses: actions/cache@v5
+        with:
+          path: |
+            .yarn/cache
+            node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --immutable
+
       - name: Run tests
         run: yarn test
+
       - name: Check for untranspiled TypeScript code
         run: |
-          tsc
+          yarn tsc
           if [ -n "$(git status --porcelain)" ]; then
             echo "Running 'tsc' should not result in any changes. Run 'tsc' before a commit.";
             exit 1
