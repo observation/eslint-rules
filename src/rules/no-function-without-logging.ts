@@ -1,12 +1,5 @@
 import * as path from "path"
-
-import { TSESTree } from "@typescript-eslint/utils"
-import { ESLintUtils } from "@typescript-eslint/utils"
-import {
-  ReportSuggestionArray,
-  RuleContext,
-  RuleFixer,
-} from "@typescript-eslint/utils/dist/ts-eslint"
+import { TSESLint, TSESTree, ESLintUtils } from '@typescript-eslint/utils'
 
 import {
   isArrowFunctionExpression,
@@ -32,14 +25,14 @@ type messageIds = "incorrectLogging" | "missingLogging" | "addLoggingSuggestion"
 const createSuggestions = (
   blockStatement: TSESTree.BlockStatement,
   suggestedLogging: string
-): ReportSuggestionArray<"addLoggingSuggestion"> => {
+): TSESLint.ReportSuggestionArray<"addLoggingSuggestion"> => {
   const logLevels = ["trace", "debug"]
   return logLevels.map((logLevel) => {
     const suggestedCode = `Log.${logLevel}('${suggestedLogging}');`
     return {
       messageId: "addLoggingSuggestion",
       data: { suggestedCode },
-      fix: (fixer: RuleFixer) => {
+      fix: (fixer: TSESLint.RuleFixer) => {
         if (blockStatement.body.length === 0) {
           const newRange: TSESTree.Range = [
             blockStatement.range[0] + 1,
@@ -58,7 +51,7 @@ const createSuggestions = (
 }
 
 const addMissingLogStatementSuggestions = (
-  context: Readonly<RuleContext<messageIds, any[]>>,
+  context: Readonly<TSESLint.RuleContext<messageIds, any[]>>,
   node: TSESTree.Node,
   blockStatement: TSESTree.BlockStatement,
   correctLogging: string
@@ -66,6 +59,7 @@ const addMissingLogStatementSuggestions = (
   context.report({
     node,
     messageId: "missingLogging",
+    data: { expectedLogging: correctLogging },
     suggest: createSuggestions(blockStatement, correctLogging),
   })
 }
@@ -129,7 +123,7 @@ const containsLoggingStatement = (
 }
 
 const checkFunctionDeclaration = (
-  context: Readonly<RuleContext<messageIds, any[]>>,
+  context: Readonly<TSESLint.RuleContext<messageIds, any[]>>,
   node: TSESTree.FunctionDeclaration
 ) => {
   const functionName = node.id ? node.id.name : ""
@@ -142,14 +136,13 @@ const checkFunctionDeclaration = (
 }
 
 const checkCallExpression = (
-  context: Readonly<RuleContext<messageIds, any[]>>,
+  context: Readonly<TSESLint.RuleContext<messageIds, any[]>>,
   node: TSESTree.CallExpression
 ) => {
   if (isLogStatement(node)) {
     const filename = path.parse(context.getFilename()).name
     const functionName = getFunctionName(node)
-    const expectedLogging =
-      filename === functionName ? filename : `${filename}:${functionName}`
+    const expectedLogging = filename === functionName ? filename : `${filename}:${functionName}`
 
     const [argument] = node.arguments
     if (!argument) {
@@ -161,7 +154,8 @@ const checkCallExpression = (
         suggest: [
           {
             messageId: "incorrectLogging",
-            fix: (fixer) => {
+            data: { expectedLogging },
+            fix: (fixer: TSESLint.RuleFixer) => {
               return fixer.insertTextAfterRange(
                 newRange,
                 `'${expectedLogging}'`
@@ -182,7 +176,8 @@ const checkCallExpression = (
           suggest: [
             {
               messageId: "incorrectLogging",
-              fix: (fixer) => {
+              data: { expectedLogging },
+              fix: (fixer: TSESLint.RuleFixer) => {
                 return fixer.replaceTextRange(
                   argument.range,
                   `'${expectedLogging}'`
@@ -197,7 +192,7 @@ const checkCallExpression = (
 }
 
 const checkVariableDeclaration = (
-  context: Readonly<RuleContext<messageIds, any[]>>,
+  context: Readonly<TSESLint.RuleContext<messageIds, any[]>>,
   node: TSESTree.VariableDeclaration
 ) => {
   if (node.declarations.length !== 1) return
@@ -225,7 +220,7 @@ const checkVariableDeclaration = (
 }
 
 const checkPropertyDefinition = (
-  context: Readonly<RuleContext<messageIds, any[]>>,
+  context: Readonly<TSESLint.RuleContext<messageIds, any[]>>,
   node: TSESTree.PropertyDefinition
 ) => {
   if (
@@ -262,7 +257,7 @@ const isSetterLikeMethodDefinition = (
 }
 
 const checkMethodDefinition = (
-  context: Readonly<RuleContext<messageIds, any[]>>,
+  context: Readonly<TSESLint.RuleContext<messageIds, any[]>>,
   node: TSESTree.MethodDefinition
 ) => {
   if (node.kind === "constructor") return
@@ -298,7 +293,6 @@ const noFunctionWithoutLogging = createRule({
   meta: {
     docs: {
       description: "All functions should include a logging statement",
-      recommended: "error",
     },
     messages: {
       incorrectLogging:
@@ -314,5 +308,14 @@ const noFunctionWithoutLogging = createRule({
   },
   defaultOptions: [],
 })
+
+export const configs = {
+  recommended: {
+    plugins: ['observation'],
+    rules: {
+      'observation/no-function-without-logging': 'error',
+    },
+  },
+}
 
 export default noFunctionWithoutLogging

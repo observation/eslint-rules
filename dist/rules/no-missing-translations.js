@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.configs = void 0;
 const fs_1 = require("fs");
 const utils_1 = require("@typescript-eslint/utils");
 const utils_2 = require("../utils");
@@ -48,7 +49,6 @@ const noMissingTranslations = createRule({
     meta: {
         docs: {
             description: "All translation keys used in the codebase should have a corresponding translation in the translation files",
-            recommended: "error",
         },
         messages: {
             missingTranslationKey: "Translation key '{{ translationKey }}' is missing in: {{ invalidFiles }}",
@@ -73,4 +73,12 @@ const noMissingTranslations = createRule({
         },
     ],
 });
+exports.configs = {
+    recommended: {
+        plugins: ['observation'],
+        rules: {
+            'observation/no-missing-translations': 'error',
+        },
+    },
+};
 exports.default = noMissingTranslations;

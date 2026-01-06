@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "nodenext",
     "outDir": "dist",
-    "lib": ["es2019"],
+    "lib": ["es2023"],
+    "esModuleInterop": true,
+    "isolatedModules": true,
     "strict": true,
     "target": "esnext"
   },
   "files": ["src/index.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }
