@@ -38,6 +38,11 @@ const path = __importStar(require("path"));
 const utils_1 = require("@typescript-eslint/utils");
 const utils_2 = require("../utils");
 const createRule = utils_1.ESLintUtils.RuleCreator(() => "https://github.com/observation/eslint-rules");
+const isIgnored = (functionName, patterns) => {
+    if (!functionName || patterns.length === 0)
+        return false;
+    return patterns.some((pattern) => new RegExp(pattern).test(functionName));
+};
 const createSuggestions = (blockStatement, suggestedLogging) => {
     const logLevels = ["trace", "debug"];
     return logLevels.map((logLevel) => {
@@ -111,18 +116,22 @@ const containsLoggingStatement = (blockStatement) => {
     }
     return false;
 };
-const checkFunctionDeclaration = (context, node) => {
+const checkFunctionDeclaration = (context, node, ignoreList) => {
     const functionName = node.id ? node.id.name : "";
+    if (isIgnored(functionName, ignoreList))
+        return;
     const file = path.parse(context.getFilename());
     const correctLogging = `${file.name}:${functionName}`;
     if (!containsLoggingStatement(node.body)) {
         addMissingLogStatementSuggestions(context, node, node.body, correctLogging);
     }
 };
-const checkCallExpression = (context, node) => {
+const checkCallExpression = (context, node, ignoreList) => {
     if (isLogStatement(node)) {
         const filename = path.parse(context.getFilename()).name;
         const functionName = getFunctionName(node);
+        if (isIgnored(functionName, ignoreList))
+            return;
         const expectedLogging = filename === functionName ? filename : `${filename}:${functionName}`;
         const [argument] = node.arguments;
         if (!argument) {
@@ -163,7 +172,7 @@ const checkCallExpression = (context, node) => {
         }
     }
 };
-const checkVariableDeclaration = (context, node) => {
+const checkVariableDeclaration = (context, node, ignoreList) => {
     if (node.declarations.length !== 1)
         return;
     const [declaration] = node.declarations;
@@ -177,21 +186,25 @@ const checkVariableDeclaration = (context, node) => {
         const isComponentDeclaration = filename === functionName;
         if (isComponentDeclaration)
             return;
+        if (isIgnored(functionName, ignoreList))
+            return;
         if (!containsLoggingStatement(body)) {
             const correctLogging = `${filename}:${functionName}`;
             addMissingLogStatementSuggestions(context, node, body, correctLogging);
         }
     }
 };
-const checkPropertyDefinition = (context, node) => {
+const checkPropertyDefinition = (context, node, ignoreList) => {
     if (node.value &&
         (0, utils_2.isArrowFunctionExpression)(node.value) &&
         (0, utils_2.isIdentifier)(node.key) &&
         (0, utils_2.isBlockStatement)(node.value.body)) {
         const { body } = node.value;
+        const filename = path.parse(context.getFilename()).name;
+        const functionName = node.key.name;
+        if (isIgnored(functionName, ignoreList))
+            return;
         if (!containsLoggingStatement(body)) {
-            const filename = path.parse(context.getFilename()).name;
-            const functionName = node.key.name;
             const correctLogging = filename === functionName ? filename : `${filename}:${functionName}`;
             addMissingLogStatementSuggestions(context, node, body, correctLogging);
         }
@@ -205,7 +218,7 @@ const isSetterLikeMethodDefinition = (node, functionName) => {
     const hasSetterLikeFunctionName = startsWithSetterLikeName.test(functionName);
     return hasSetterLikeFunctionName && returnsVoid;
 };
-const checkMethodDefinition = (context, node) => {
+const checkMethodDefinition = (context, node, ignoreList) => {
     if (node.kind === "constructor")
         return;
     if (node.kind === "get")
@@ -214,11 +227,13 @@ const checkMethodDefinition = (context, node) => {
         return;
     if ((0, utils_2.isFunctionExpression)(node.value) && (0, utils_2.isIdentifier)(node.key)) {
         const { body } = node.value;
+        const filename = path.parse(context.getFilename()).name;
+        const functionName = node.key.name;
+        if (isSetterLikeMethodDefinition(node, functionName))
+            return;
+        if (isIgnored(functionName, ignoreList))
+            return;
         if (!containsLoggingStatement(body)) {
-            const filename = path.parse(context.getFilename()).name;
-            const functionName = node.key.name;
-            if (isSetterLikeMethodDefinition(node, functionName))
-                return;
             const correctLogging = filename === functionName ? filename : `${filename}:${functionName}`;
             addMissingLogStatementSuggestions(context, node, body, correctLogging);
         }
@@ -226,12 +241,13 @@ const checkMethodDefinition = (context, node) => {
 };
 const noFunctionWithoutLogging = createRule({
     create(context) {
+        const ignoreList = context.options[0]?.ignoreList ?? [];
         return {
-            FunctionDeclaration: (node) => checkFunctionDeclaration(context, node),
-            CallExpression: (node) => checkCallExpression(context, node),
-            VariableDeclaration: (node) => checkVariableDeclaration(context, node),
-            PropertyDefinition: (node) => checkPropertyDefinition(context, node),
-            MethodDefinition: (node) => checkMethodDefinition(context, node),
+            FunctionDeclaration: (node) => checkFunctionDeclaration(context, node, ignoreList),
+            CallExpression: (node) => checkCallExpression(context, node, ignoreList),
+            VariableDeclaration: (node) => checkVariableDeclaration(context, node, ignoreList),
+            PropertyDefinition: (node) => checkPropertyDefinition(context, node, ignoreList),
+            MethodDefinition: (node) => checkMethodDefinition(context, node, ignoreList),
         };
     },
     name: "no-function-without-logging",
@@ -246,10 +262,22 @@ const noFunctionWithoutLogging = createRule({
         },
         type: "suggestion",
         fixable: "code",
-        schema: [],
+        schema: [
+            {
+                type: "object",
+                properties: {
+                    ignoreList: {
+                        type: "array",
+                        items: { type: "string" },
+                        uniqueItems: true,
+                    },
+                },
+                additionalProperties: false,
+            },
+        ],
         hasSuggestions: true,
     },
-    defaultOptions: [],
+    defaultOptions: [{}],
 });
 exports.configs = {
     recommended: {
