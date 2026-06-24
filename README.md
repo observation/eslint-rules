@@ -227,6 +227,27 @@ class ClassName {
 }
 ```
 
+## Configuration
+
+By default the rule applies to all functions. You can optionally provide an `ignoreList` list of regex patterns — any function whose name matches a pattern is exempt from the rule.
+
+```js
+rules: {
+    'observation/no-function-without-logging': [
+        'error',
+        {
+            ignoreList: [
+                '^handle[A-Z].*',  // e.g. handleClick, handleChange
+                '^on[A-Z].*',      // e.g. onChange, onPress
+                'mySpecificFunction',
+            ],
+        }
+    ]
+}
+```
+
+Each entry in `ignoreList` is interpreted as a regular expression and tested against the function name. Functions skipped by other built-in exceptions (constructors, getters/setters, setter-like methods, component declarations) are unaffected by this option.
+
 ## No Missing Translations
 
 This ESLint rule ensures that every call to `i18n.t(...)` in the codebase has a corresponding key in all translation files. A translation file is defined as an input file for the npm package `i18n-js` (https://www.npmjs.com/package/i18n-js).

@@ -66,6 +66,36 @@ ruleTester.run("no-function-without-logging", no_function_without_logging_1.defa
             filename: "Component",
             code: "const Component = () => { Log.debug('Component') }",
         },
+        {
+            name: "Ignored function declaration is skipped",
+            options: [{ ignoreList: ["ignoredFunction"] }],
+            code: "function ignoredFunction(){}",
+        },
+        {
+            name: "Ignored arrow function in variable declaration is skipped",
+            options: [{ ignoreList: ["ignoredFunction"] }],
+            code: "const ignoredFunction = () => { }",
+        },
+        {
+            name: "Ignored class method is skipped",
+            options: [{ ignoreList: ["ignoredFunction"] }],
+            code: "class ClassName { ignoredFunction(){ } }",
+        },
+        {
+            name: "Ignored class property arrow function is skipped",
+            options: [{ ignoreList: ["ignoredFunction"] }],
+            code: "class ClassName { ignoredFunction = () => { } }",
+        },
+        {
+            name: "Ignored function matched by regex pattern is skipped",
+            options: [{ ignoreList: ["^handle[A-Z].*"] }],
+            code: "function handleClick(){}",
+        },
+        {
+            name: "Multiple ignore patterns, one matches",
+            options: [{ ignoreList: ["^handle[A-Z].*", "^on[A-Z].*"] }],
+            code: "function onChange(){}",
+        },
     ],
     invalid: [
         {
