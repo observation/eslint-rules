@@ -227,6 +227,14 @@ class ClassName {
 }
 ```
 
+Platform-specific suffixes (e.g. `.android.ts`, `.ios.ts`) are stripped from the filename, so `SomeClass.android.ts` expects `SomeClass` in the logging, not `SomeClass.android`:
+```typescript
+// SomeClass.android.ts
+function functionName(){
+    Log.trace('SomeClass:functionName');
+}
+```
+
 ## Configuration
 
 By default the rule applies to all functions. You can optionally provide an `ignoreList` list of regex patterns — any function whose name matches a pattern is exempt from the rule.

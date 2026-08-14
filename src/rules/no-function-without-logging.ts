@@ -24,6 +24,12 @@ type messageIds = "incorrectLogging" | "missingLogging" | "addLoggingSuggestion"
 
 type Options = [{ ignoreList?: string[] }]
 
+const getClassName = (filename: string): string => {
+  const base = path.basename(filename)
+  const firstDotIndex = base.indexOf(".")
+  return firstDotIndex === -1 ? base : base.slice(0, firstDotIndex)
+}
+
 const isIgnored = (functionName: string | null, patterns: string[]): boolean => {
   if (!functionName || patterns.length === 0) return false
   return patterns.some((pattern) => new RegExp(pattern).test(functionName))
@@ -137,9 +143,9 @@ const checkFunctionDeclaration = (
   const functionName = node.id ? node.id.name : ""
   if (isIgnored(functionName, ignoreList)) return
 
-  const file = path.parse(context.getFilename())
+  const className = getClassName(context.getFilename())
 
-  const correctLogging = `${file.name}:${functionName}`
+  const correctLogging = `${className}:${functionName}`
   if (!containsLoggingStatement(node.body)) {
     addMissingLogStatementSuggestions(context, node, node.body, correctLogging)
   }
@@ -151,7 +157,7 @@ const checkCallExpression = (
   ignoreList: string[]
 ) => {
   if (isLogStatement(node)) {
-    const filename = path.parse(context.getFilename()).name
+    const filename = getClassName(context.getFilename())
     const functionName = getFunctionName(node)
     if (isIgnored(functionName, ignoreList)) return
     const expectedLogging = filename === functionName ? filename : `${filename}:${functionName}`
@@ -219,7 +225,7 @@ const checkVariableDeclaration = (
   ) {
     const { body } = declaration.init
 
-    const filename = path.parse(context.getFilename()).name
+    const filename = getClassName(context.getFilename())
     const functionName = declaration.id.name
 
     const isComponentDeclaration = filename === functionName
@@ -245,7 +251,7 @@ const checkPropertyDefinition = (
     isBlockStatement(node.value.body)
   ) {
     const { body } = node.value
-    const filename = path.parse(context.getFilename()).name
+    const filename = getClassName(context.getFilename())
     const functionName = node.key.name
 
     if (isIgnored(functionName, ignoreList)) return
@@ -284,7 +290,7 @@ const checkMethodDefinition = (
 
   if (isFunctionExpression(node.value) && isIdentifier(node.key)) {
     const { body } = node.value
-    const filename = path.parse(context.getFilename()).name
+    const filename = getClassName(context.getFilename())
     const functionName = node.key.name
 
     if (isSetterLikeMethodDefinition(node, functionName)) return
