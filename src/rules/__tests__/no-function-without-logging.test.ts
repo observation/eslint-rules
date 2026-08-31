@@ -64,6 +64,11 @@ ruleTester.run("no-function-without-logging", rule, {
       code: "const Component = () => { Log.debug('Component') }",
     },
     {
+      name: "Platform-specific suffix is stripped from filename in logging",
+      filename: "SomeClass.android.ts",
+      code: "function functionName(){ Log.debug('SomeClass:functionName') }",
+    },
+    {
       name: "Ignored function declaration is skipped",
       options: [{ ignoreList: ["ignoredFunction"] }],
       code: "function ignoredFunction(){}",
@@ -210,6 +215,48 @@ ruleTester.run("no-function-without-logging", rule, {
               data: { suggestedCode: "Log.debug('file:functionName');" },
               output:
                 "class ClassName { functionName = () => {Log.debug('file:functionName'); } }",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Missing logging in function declaration in platform-specific file",
+      filename: "SomeClass.android.ts",
+      code: "function functionName(){}",
+      errors: [
+        {
+          messageId: "missingLogging",
+          data: { expectedLogging: "SomeClass:functionName" },
+          suggestions: [
+            {
+              messageId: "addLoggingSuggestion",
+              data: { suggestedCode: "Log.trace('SomeClass:functionName');" },
+              output:
+                "function functionName(){Log.trace('SomeClass:functionName');}",
+            },
+            {
+              messageId: "addLoggingSuggestion",
+              data: { suggestedCode: "Log.debug('SomeClass:functionName');" },
+              output:
+                "function functionName(){Log.debug('SomeClass:functionName');}",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Incorrect logging using full filename with platform suffix",
+      filename: "SomeClass.android.ts",
+      code: "function functionName(){ Log.debug('SomeClass.android:functionName') }",
+      errors: [
+        {
+          messageId: "incorrectLogging",
+          suggestions: [
+            {
+              messageId: "incorrectLogging",
+              output:
+                "function functionName(){ Log.debug('SomeClass:functionName') }",
             },
           ],
         },

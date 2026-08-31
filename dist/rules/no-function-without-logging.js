@@ -38,6 +38,11 @@ const path = __importStar(require("path"));
 const utils_1 = require("@typescript-eslint/utils");
 const utils_2 = require("../utils");
 const createRule = utils_1.ESLintUtils.RuleCreator(() => "https://github.com/observation/eslint-rules");
+const getClassName = (filename) => {
+    const base = path.basename(filename);
+    const firstDotIndex = base.indexOf(".");
+    return firstDotIndex === -1 ? base : base.slice(0, firstDotIndex);
+};
 const isIgnored = (functionName, patterns) => {
     if (!functionName || patterns.length === 0)
         return false;
@@ -120,15 +125,15 @@ const checkFunctionDeclaration = (context, node, ignoreList) => {
     const functionName = node.id ? node.id.name : "";
     if (isIgnored(functionName, ignoreList))
         return;
-    const file = path.parse(context.getFilename());
-    const correctLogging = `${file.name}:${functionName}`;
+    const className = getClassName(context.getFilename());
+    const correctLogging = `${className}:${functionName}`;
     if (!containsLoggingStatement(node.body)) {
         addMissingLogStatementSuggestions(context, node, node.body, correctLogging);
     }
 };
 const checkCallExpression = (context, node, ignoreList) => {
     if (isLogStatement(node)) {
-        const filename = path.parse(context.getFilename()).name;
+        const filename = getClassName(context.getFilename());
         const functionName = getFunctionName(node);
         if (isIgnored(functionName, ignoreList))
             return;
@@ -181,7 +186,7 @@ const checkVariableDeclaration = (context, node, ignoreList) => {
         (0, utils_2.isBlockStatement)(declaration.init.body) &&
         (0, utils_2.isIdentifier)(declaration.id)) {
         const { body } = declaration.init;
-        const filename = path.parse(context.getFilename()).name;
+        const filename = getClassName(context.getFilename());
         const functionName = declaration.id.name;
         const isComponentDeclaration = filename === functionName;
         if (isComponentDeclaration)
@@ -200,7 +205,7 @@ const checkPropertyDefinition = (context, node, ignoreList) => {
         (0, utils_2.isIdentifier)(node.key) &&
         (0, utils_2.isBlockStatement)(node.value.body)) {
         const { body } = node.value;
-        const filename = path.parse(context.getFilename()).name;
+        const filename = getClassName(context.getFilename());
         const functionName = node.key.name;
         if (isIgnored(functionName, ignoreList))
             return;
@@ -227,7 +232,7 @@ const checkMethodDefinition = (context, node, ignoreList) => {
         return;
     if ((0, utils_2.isFunctionExpression)(node.value) && (0, utils_2.isIdentifier)(node.key)) {
         const { body } = node.value;
-        const filename = path.parse(context.getFilename()).name;
+        const filename = getClassName(context.getFilename());
         const functionName = node.key.name;
         if (isSetterLikeMethodDefinition(node, functionName))
             return;
