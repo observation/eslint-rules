@@ -85,7 +85,7 @@ const noEagerTranslations = createRule<Options, MessageIds>({
     },
     messages: {
       eagerTranslation:
-        "i18n.t() is evaluated before the locale is set, so it is always in the default language. Move it into a function that is called when the text is needed.",
+        "i18n.t() is evaluated only once, when the module is loaded or the class is instantiated. It may run before the locale is set, and it won't follow later language changes. Move it into a function that is called when the text is needed.",
     },
     type: "problem",
     schema: [],

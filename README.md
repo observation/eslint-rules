@@ -310,7 +310,9 @@ rules: {
 
 ## No Eager Translations
 
-This ESLint rule ensures that every call to `i18n.t(...)` is evaluated when the text is needed, and not when a module is loaded or a class is instantiated. The locale is set during app initialisation, so a translation that is evaluated earlier is always in the default language. It also does not update when the user changes the language while the app is running.
+This ESLint rule ensures that every call to `i18n.t(...)` is evaluated when the text is needed, and not when a module is loaded or a class is instantiated. Such a translation is evaluated only once, so its text is fixed in whatever locale is active at that moment:
+- If it is evaluated before the locale is set during app initialisation, it is in the default language.
+- If the user changes the language while the app is running, it keeps the previous language.
 
 A call to `i18n.t(...)` is reported when it is:
 - at module level, including inside module level objects and arrays
