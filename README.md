@@ -390,6 +390,10 @@ class ClassName {
 </tr>
 </table>
 
+## Caveats
+
+The rule does not detect translations in callbacks that are executed immediately, such as `keys.map((key) => i18n.t(key))` at module level. Such calls are evaluated once as well, so avoid them.
+
 ## Configuration
 The rule has no options:
 ```

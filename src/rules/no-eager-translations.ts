@@ -30,7 +30,7 @@ const isTranslationCall = (node: TSESTree.CallExpression) => {
 }
 
 /**
- * Constructors run as soon as an instance is created, which for stores happens before the locale is set
+ * A constructor runs once per instance, so the text never follows a language change
  */
 const isConstructor = (node: FunctionNode) => {
   const { parent } = node
@@ -92,5 +92,14 @@ const noEagerTranslations = createRule<Options, MessageIds>({
   },
   defaultOptions: [],
 })
+
+export const configs = {
+  recommended: {
+    plugins: ['observation'],
+    rules: {
+      'observation/no-eager-translations': 'error',
+    },
+  },
+}
 
 export default noEagerTranslations

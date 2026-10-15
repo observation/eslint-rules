@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.configs = void 0;
 const utils_1 = require("@typescript-eslint/utils");
 const utils_2 = require("../utils");
 const createRule = utils_1.ESLintUtils.RuleCreator(() => "https://github.com/observation/eslint-rules");
@@ -15,7 +16,7 @@ const isTranslationCall = (node) => {
         callee.property.name === "t");
 };
 /**
- * Constructors run as soon as an instance is created, which for stores happens before the locale is set
+ * A constructor runs once per instance, so the text never follows a language change
  */
 const isConstructor = (node) => {
     const { parent } = node;
@@ -68,4 +69,12 @@ const noEagerTranslations = createRule({
     },
     defaultOptions: [],
 });
+exports.configs = {
+    recommended: {
+        plugins: ['observation'],
+        rules: {
+            'observation/no-eager-translations': 'error',
+        },
+    },
+};
 exports.default = noEagerTranslations;

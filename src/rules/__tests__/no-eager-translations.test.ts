@@ -45,6 +45,15 @@ ruleTester.run("no-eager-translations", rule, {
       name: "Other t function",
       code: "const title = other.t('Title')",
     },
+    {
+      name: "Getter in a module level object",
+      code: "const rationale = { get title() { return i18n.t('Title') } }",
+    },
+    {
+      name: "JSX in a component",
+      code: "const Component = () => <Text>{i18n.t('Title')}</Text>",
+      languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
+    },
   ],
   invalid: [
     {
@@ -90,6 +99,17 @@ ruleTester.run("no-eager-translations", rule, {
     {
       name: "Immediately invoked function",
       code: "const title = (() => i18n.t('Title'))()",
+      errors: [{ messageId: "eagerTranslation" }],
+    },
+    {
+      name: "Immediately invoked function expression",
+      code: "const title = (function () { return i18n.t('Title') })()",
+      errors: [{ messageId: "eagerTranslation" }],
+    },
+    {
+      name: "Module level JSX",
+      code: "const element = <Text>{i18n.t('Title')}</Text>",
+      languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
       errors: [{ messageId: "eagerTranslation" }],
     },
   ],
