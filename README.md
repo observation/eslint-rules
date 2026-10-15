@@ -308,6 +308,102 @@ rules: {
 
 ```
 
+## No Eager Translations
+
+This ESLint rule ensures that every call to `i18n.t(...)` is evaluated when the text is needed, and not when a module is loaded or a class is instantiated. Such a translation is evaluated only once, so its text is fixed in whatever locale is active at that moment:
+- If it is evaluated before the locale is set during app initialisation, it is in the default language.
+- If the user changes the language while the app is running, it keeps the previous language.
+
+A call to `i18n.t(...)` is reported when it is:
+- at module level, including inside module level objects and arrays
+- in a class property initialiser, static property or static block
+- in a constructor
+- in an immediately invoked function at one of the levels above
+
+## Examples
+
+<table>
+<tr>
+<td> ❌ Incorrect </td> <td> ✅ Correct </td>
+</tr>
+<tr>
+<td>
+
+```typescript
+const rationale = {
+    title: i18n.t('Title'),
+}
+```
+</td>
+<td>
+
+```typescript
+const rationale = () => ({
+    title: i18n.t('Title'),
+})
+```
+</td>
+</tr>
+
+<tr>
+<td>
+
+```typescript
+class ClassName {
+    rationale = {
+        title: i18n.t('Title'),
+    }
+}
+```
+</td>
+<td>
+
+```typescript
+class ClassName {
+    get rationale() {
+        return { title: i18n.t('Title') }
+    }
+}
+```
+</td>
+</tr>
+
+<tr>
+<td>
+
+```typescript
+class ClassName {
+    constructor() {
+        this.title = i18n.t('Title')
+    }
+}
+```
+</td>
+<td>
+
+```typescript
+class ClassName {
+    getTitle = () => i18n.t('Title')
+}
+```
+</td>
+</tr>
+</table>
+
+## Caveats
+
+The rule does not detect translations in callbacks that are executed immediately, such as `keys.map((key) => i18n.t(key))` at module level. Such calls are evaluated once as well, so avoid them.
+
+## Configuration
+The rule has no options:
+```
+...
+rules: {
+    'observation/no-eager-translations': 'error',
+}
+...
+```
+
 # Build & publish
 
 1. run `tsc` in the working folder, this creates the javascript files that will be run by ESLint
